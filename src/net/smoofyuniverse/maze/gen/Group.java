@@ -31,9 +31,7 @@ public final class Group {
 	}
 	
 	public boolean append(Member m) {
-		if (m == null)
-			return false;
-		return append(m.group);
+		return m != null && append(m.group);
 	}
 	
 	public boolean append(Group g) {
