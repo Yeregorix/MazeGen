@@ -1,16 +1,16 @@
-/*******************************************************************************
- * Copyright (C) 2017 Hugo Dupanloup (Yeregorix)
- * 
+/*
+ * Copyright (c) 2017 Hugo Dupanloup (Yeregorix)
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -18,15 +18,15 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- ******************************************************************************/
+ */
+
 package net.smoofyuniverse.maze.gen;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
+import net.smoofyuniverse.common.fxui.task.ObservableTask;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Random;
-
-import net.smoofyuniverse.common.fxui.task.ObservableTask;
 
 public class Maze {
 	public final int width, height;
@@ -126,24 +126,58 @@ public class Maze {
 		
 		forceUpdate(1);
 	}
+
+	public BufferedImage createImage(int whitePx, int blackPx) {
+		forceUpdate(0);
+
+		int imgWidth = (this.width * whitePx) + ((this.width + 1) * blackPx);
+		int imgHeight = (this.height * whitePx) + ((this.height + 1) * blackPx);
+		BufferedImage img = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_BYTE_BINARY);
+
+		Graphics2D g = img.createGraphics();
+		g.setColor(Color.WHITE);
+
+		int pos = 0;
+		int imgY = blackPx;
+		for (int y = 0; y < this.height; y++) {
+			int imgX = blackPx;
+			for (int x = 0; x < this.width; x++) {
+				Point p = this.points[pos++];
+
+				g.fillRect(imgX, imgY, whitePx, whitePx);
+				if (p.connectedRight)
+					g.fillRect(imgX + whitePx, imgY, blackPx, whitePx);
+				if (p.connectedDown)
+					g.fillRect(imgX, imgY + whitePx, whitePx, blackPx);
+
+				update(pos / (double) this.points.length);
+				imgX += whitePx + blackPx;
+			}
+			imgY += whitePx + blackPx;
+		}
+
+		forceUpdate(1);
+
+		return img;
+	}
 	
 	public class Point extends Group.Member {
 		public final int posX, posY;
-		
+
 		private boolean connectedRight = false, connectedDown = false;
 		private Direction[] directions;
 		private int dirIndex;
-		
+
 		public Point(int posX, int posY) {
 			this.posX = posX;
 			this.posY = posY;
 		}
-		
+
 		public void shuffleDirection(Random r) {
 			this.directions = Direction.randomCombinaison(r);
 			this.dirIndex = -1;
 		}
-		
+
 		public void connect() {
 			while (this.dirIndex < 3) {
 				this.dirIndex++;
@@ -151,16 +185,16 @@ public class Maze {
 					return;
 			}
 		}
-		
+
 		public Point getRelative(Direction d) {
 			return get(this.posX + d.dX, this.posY + d.dY);
 		}
-		
+
 		public boolean connect(Direction d) {
 			Point p2 = getRelative(d);
 			if (!this.group.append(p2))
 				return false;
-			
+
 			switch (d) {
 			case UP:
 				p2.connectedDown = true;
@@ -177,39 +211,5 @@ public class Maze {
 			}
 			return true;
 		}
-	}
-	
-	public BufferedImage createImage(int whitePx, int blackPx) {
-		forceUpdate(0);
-		
-		int imgWidth = (this.width * whitePx) + ((this.width +1) * blackPx);
-		int imgHeight = (this.height * whitePx) + ((this.height +1) * blackPx);
-		BufferedImage img = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_BYTE_BINARY);
-		
-		Graphics2D g = img.createGraphics();
-		g.setColor(Color.WHITE);
-		
-		int pos = 0;
-		int imgY = blackPx;
-		for (int y = 0; y < this.height; y++) {
-			int imgX = blackPx;
-			for (int x = 0; x < this.width; x++) {
-				Point p = this.points[pos++];
-				
-				g.fillRect(imgX, imgY, whitePx, whitePx);
-				if (p.connectedRight)
-					g.fillRect(imgX + whitePx, imgY, blackPx, whitePx);
-				if (p.connectedDown)
-					g.fillRect(imgX, imgY + whitePx, whitePx, blackPx);
-				
-				update(pos / (double) this.points.length);
-				imgX += whitePx + blackPx;
-			}
-			imgY += whitePx + blackPx;
-		}
-		
-		forceUpdate(1);
-		
-		return img;
 	}
 }
