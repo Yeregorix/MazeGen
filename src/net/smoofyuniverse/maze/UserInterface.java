@@ -39,8 +39,8 @@ import net.smoofyuniverse.common.fxui.field.IntegerField;
 import net.smoofyuniverse.common.fxui.field.LongField;
 import net.smoofyuniverse.common.fxui.task.Chrono;
 import net.smoofyuniverse.common.fxui.task.ObservableTask;
-import net.smoofyuniverse.common.logger.core.Logger;
 import net.smoofyuniverse.common.util.GridUtil;
+import net.smoofyuniverse.logger.core.Logger;
 import net.smoofyuniverse.maze.gen.Maze;
 
 import javax.imageio.ImageIO;

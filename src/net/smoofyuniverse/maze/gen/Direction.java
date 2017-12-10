@@ -29,9 +29,20 @@ public enum Direction {
 	DOWN(0, +1),
 	LEFT(-1, 0),
 	RIGHT(+1, 0);
-	
-	private static final Direction[][] combinaisons = new Direction[24][];
-	
+
+	private static final Direction[][] combinations = new Direction[24][];
+
+	public static Direction[] randomCombination(Random r) {
+		return combinations[r.nextInt(24)];
+	}
+
+	public final int dX, dY;
+
+	private Direction(int dX, int dY) {
+		this.dX = dX;
+		this.dY = dY;
+	}
+
 	static {
 		int i = 0;
 		for (Direction d1 : values()) {
@@ -44,21 +55,10 @@ public enum Direction {
 					for (Direction d4 : values()) {
 						if (d4 == d1 || d4 == d2 || d4 == d3)
 							continue;
-						combinaisons[i++] = new Direction[] {d1, d2, d3, d4};
+						combinations[i++] = new Direction[]{d1, d2, d3, d4};
 					}
 				}
 			}
 		}
-	}
-
-	public final int dX, dY;
-
-	private Direction(int dX, int dY) {
-		this.dX = dX;
-		this.dY = dY;
-	}
-
-	public static Direction[] randomCombinaison(Random r) {
-		return combinaisons[r.nextInt(24)];
 	}
 }

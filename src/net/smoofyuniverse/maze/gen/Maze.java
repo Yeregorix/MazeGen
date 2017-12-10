@@ -90,8 +90,8 @@ public class Maze {
 		// Shuffle all
 		int it = 0;
 		for (Point p : this.points) {
-			p.shuffleDirection(r);
-			
+			p.shuffleCombinations(r);
+
 			it++;
 			update(it / (double) this.points.length);
 		}
@@ -107,7 +107,6 @@ public class Maze {
 		
 		double progress = 0;
 		it = 0;
-		
 		forceUpdate(0);
 		
 		// Connect all
@@ -173,8 +172,8 @@ public class Maze {
 			this.posY = posY;
 		}
 
-		public void shuffleDirection(Random r) {
-			this.directions = Direction.randomCombinaison(r);
+		public void shuffleCombinations(Random r) {
+			this.directions = Direction.randomCombination(r);
 			this.dirIndex = -1;
 		}
 
