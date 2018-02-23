@@ -33,7 +33,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import net.smoofyuniverse.common.app.Application;
+import net.smoofyuniverse.common.app.App;
 import net.smoofyuniverse.common.fxui.dialog.Popup;
 import net.smoofyuniverse.common.fxui.field.IntegerField;
 import net.smoofyuniverse.common.fxui.field.LongField;
@@ -51,13 +51,13 @@ import java.util.Random;
 import java.util.function.Consumer;
 
 public final class UserInterface extends GridPane {
-	private static final Logger logger = Application.getLogger("UserInterface");
+	private static final Logger logger = App.getLogger("UserInterface");
 	private static final Random random = new Random();
 	
 	private static int taskId = 0;
 	
 	public UserInterface() {
-		Label title = new Label(Application.get().getName());
+		Label title = new Label(App.get().getName());
 		title.setFont(Font.font("Monospaced", FontWeight.BOLD, 24));
 		
 		LongField seed = new LongField(0);
