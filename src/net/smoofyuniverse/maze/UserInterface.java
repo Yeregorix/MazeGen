@@ -98,7 +98,7 @@ public final class UserInterface extends GridPane {
 		randomSeed.setOnAction((e) -> seed.valueProperty().set(random.nextLong()));
 		
 		genMaze.setOnAction((ev) -> {
-			File f = chooser.showSaveDialog(MazeGen.get().getStage());
+			File f = chooser.showSaveDialog(MazeGen.get().getStage().orElse(null));
 			if (f == null)
 				return;
 			
