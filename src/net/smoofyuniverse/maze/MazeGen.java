@@ -36,16 +36,22 @@ public class MazeGen extends Application {
 
 	public MazeGen(Arguments args) {
 		super(args, "MazeGen", "Maze Generator", "1.0.0");
+	}
+
+	@Override
+	public void init() {
 		initServices(Executors.newSingleThreadExecutor());
+
 		Platform.runLater(() -> {
 			initStage(550, 200, false, generateIcon());
 			setScene(new UserInterface()).show();
 		});
+
 		checkForUpdate();
 	}
 
 	public static void main(String args[]) {
-		new MazeGen(Arguments.parse(args));
+		new MazeGen(Arguments.parse(args)).safeInit();
 	}
 	
 	private static Image generateIcon() {
