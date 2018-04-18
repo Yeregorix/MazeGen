@@ -22,9 +22,9 @@
 
 package net.smoofyuniverse.maze;
 
-import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import net.smoofyuniverse.common.app.App;
 import net.smoofyuniverse.common.app.Application;
 import net.smoofyuniverse.common.app.Arguments;
 import net.smoofyuniverse.maze.gen.Maze;
@@ -42,16 +42,25 @@ public class MazeGen extends Application {
 	public void init() {
 		initServices(Executors.newSingleThreadExecutor());
 
-		Platform.runLater(() -> {
-			initStage(550, 200, false, generateIcon());
-			setScene(new UserInterface()).show();
-		});
+		if (this.UIEnabled) {
+			App.runLater(() -> {
+				initStage(550, 200, false, generateIcon());
+				setScene(new UserInterface()).show();
+			});
 
-		checkForUpdate();
+			checkForUpdate();
+		} else {
+			skipStage();
+			checkForUpdate();
+
+			getLogger().info("This functionality is not ready yet.");
+
+			shutdown();
+		}
 	}
 
 	public static void main(String args[]) {
-		new MazeGen(Arguments.parse(args)).safeInit();
+		new MazeGen(Arguments.parse(args)).launch();
 	}
 	
 	private static Image generateIcon() {

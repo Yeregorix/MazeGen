@@ -22,7 +22,7 @@
 
 package net.smoofyuniverse.maze.gen;
 
-import net.smoofyuniverse.common.fxui.task.ObservableTask;
+import net.smoofyuniverse.common.task.Task;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -31,8 +31,8 @@ import java.util.Random;
 public class Maze {
 	public final int width, height;
 	public final Point[] points;
-	
-	public ObservableTask task;
+
+	public Task task;
 	
 	private double lastUpdate;
 	
