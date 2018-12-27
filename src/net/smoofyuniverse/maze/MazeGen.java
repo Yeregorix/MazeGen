@@ -59,7 +59,7 @@ public class MazeGen extends Application {
 		}
 	}
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		new MazeGen(Arguments.parse(args)).launch();
 	}
 	
