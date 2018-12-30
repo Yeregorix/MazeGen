@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id 'maven'
+}
+
+group 'net.smoofyuniverse'
+version = '1.0.1'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+}
+
+dependencies {
+    compile 'net.smoofyuniverse:AppCommon:1.0.0'
+}
+
+task shadedJar(type: Jar) {
+    classifier = 'shaded'
+    configurations.compile.each { dep ->
+        from(project.zipTree(dep)) {
+            exclude 'META-INF', 'META-INF/**'
+        }
+    }
+    manifest {
+        attributes('Main-Class': 'net.smoofyuniverse.common.Main')
+    }
+    with jar
+}
+
+compileJava.options.encoding = 'UTF-8'
