@@ -38,7 +38,7 @@ public enum Direction {
 
 	public final int dX, dY;
 
-	private Direction(int dX, int dY) {
+	Direction(int dX, int dY) {
 		this.dX = dX;
 		this.dY = dY;
 	}
