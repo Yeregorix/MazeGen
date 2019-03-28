@@ -39,7 +39,7 @@ import net.smoofyuniverse.common.fxui.field.IntegerField;
 import net.smoofyuniverse.common.fxui.field.LongField;
 import net.smoofyuniverse.common.fxui.task.Chrono;
 import net.smoofyuniverse.common.fxui.task.ObservableTask;
-import net.smoofyuniverse.common.task.Task;
+import net.smoofyuniverse.common.task.ProgressTask;
 import net.smoofyuniverse.common.util.GridUtil;
 import net.smoofyuniverse.logger.core.Logger;
 import net.smoofyuniverse.maze.gen.Maze;
@@ -114,12 +114,12 @@ public final class UserInterface extends GridPane {
 			ObservableTask t = new ObservableTask();
 			t.titleProperty().bind(Bindings.concat("Durée: ", chrono.textProperty()));
 
-			Consumer<Task> consumer = (task) -> {
+			Consumer<ProgressTask> consumer = (task) -> {
 				chrono.start();
 
 				task.setMessage("Initialisation: " + widthV + "x" + heightV);
 				Maze maze = new Maze(widthV, heightV);
-				maze.task = task;
+				maze.listener = task;
 				task.setMessage("Graine: " + seedV);
 				Random r = new Random(seedV);
 				

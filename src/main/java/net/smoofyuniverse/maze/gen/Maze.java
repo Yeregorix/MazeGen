@@ -22,7 +22,7 @@
 
 package net.smoofyuniverse.maze.gen;
 
-import net.smoofyuniverse.common.task.Task;
+import net.smoofyuniverse.common.task.ProgressListener;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -32,7 +32,7 @@ public class Maze {
 	public final int width, height;
 	public final Point[] points;
 
-	public Task task;
+	public ProgressListener listener;
 	
 	private double lastUpdate;
 	
@@ -47,46 +47,12 @@ public class Maze {
 			forceUpdate(progress);
 	}
 	
-	private void forceUpdate(double progress) {
-		this.lastUpdate = progress;
-		if (this.task != null)
-			this.task.setProgress(progress);
-	}
-	
-	public boolean contains(int x, int y) {
-		return x >= 0 && x < this.width && y >= 0 && y < this.height;
-	}
-	
-	public Point get(int x, int y) {
-		return contains(x, y) ? this.points[y * this.width + x] : null;
-	}
-	
-	public void fill() {
-		forceUpdate(0);
-		
-		int pos = 0;
-		for (int y = 0; y < this.height; y++) {
-			for (int x = 0; x < this.width; x++) {
-				this.points[pos] = new Point(x, y);
-				pos++;
-				
-				update(pos / (double) this.points.length);
-			}
-		}
-		
-		forceUpdate(1);
-	}
-	
-	public boolean allConnected() {
-		return this.points[0].group.size() == this.points.length;
-	}
-	
 	public void connectAll(Random r) {
-		if (this.task != null)
-			this.task.setCancelled(false);
-		
+		if (this.listener != null)
+			this.listener.setCancelled(false);
+
 		forceUpdate(0);
-		
+
 		// Shuffle all
 		int it = 0;
 		for (Point p : this.points) {
@@ -95,25 +61,25 @@ public class Maze {
 			it++;
 			update(it / (double) this.points.length);
 		}
-		
+
 		forceUpdate(1);
-		
+
 		// Prepare to watch progress
 		int phase1 = this.points.length;
 		int phase2 = (int) (phase1 * 0.25);
-		
+
 		double p1 = (1d / (double) phase1) * 0.1;
 		double p2 = (1d / (double) phase2) * 0.9;
-		
+
 		double progress = 0;
 		it = 0;
 		forceUpdate(0);
-		
+
 		// Connect all
 		RandomQueue<Point> queue = RandomQueue.of(this.points, r);
-		while (!allConnected() && (this.task == null || !this.task.isCancelled())) {
+		while (!allConnected() && (this.listener == null || !this.listener.isCancelled())) {
 			queue.next().connect();
-			
+
 			// Watch progress
 			it++;
 			if (it < phase1)
@@ -122,8 +88,42 @@ public class Maze {
 				progress += p2;
 			update(progress);
 		}
-		
+
 		forceUpdate(1);
+	}
+
+	public boolean contains(int x, int y) {
+		return x >= 0 && x < this.width && y >= 0 && y < this.height;
+	}
+
+	public Point get(int x, int y) {
+		return contains(x, y) ? this.points[y * this.width + x] : null;
+	}
+
+	public void fill() {
+		forceUpdate(0);
+
+		int pos = 0;
+		for (int y = 0; y < this.height; y++) {
+			for (int x = 0; x < this.width; x++) {
+				this.points[pos] = new Point(x, y);
+				pos++;
+
+				update(pos / (double) this.points.length);
+			}
+		}
+
+		forceUpdate(1);
+	}
+
+	public boolean allConnected() {
+		return this.points[0].group.size() == this.points.length;
+	}
+
+	private void forceUpdate(double progress) {
+		this.lastUpdate = progress;
+		if (this.listener != null)
+			this.listener.setProgress(progress);
 	}
 
 	public BufferedImage createImage(int whitePx, int blackPx) {
