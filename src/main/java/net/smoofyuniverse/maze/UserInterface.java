@@ -34,11 +34,11 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import net.smoofyuniverse.common.app.App;
-import net.smoofyuniverse.common.fxui.dialog.Popup;
-import net.smoofyuniverse.common.fxui.field.IntegerField;
-import net.smoofyuniverse.common.fxui.field.LongField;
-import net.smoofyuniverse.common.fxui.task.Chrono;
-import net.smoofyuniverse.common.fxui.task.ObservableTask;
+import net.smoofyuniverse.common.fx.dialog.Popup;
+import net.smoofyuniverse.common.fx.field.IntegerField;
+import net.smoofyuniverse.common.fx.field.LongField;
+import net.smoofyuniverse.common.fx.task.Chrono;
+import net.smoofyuniverse.common.fx.task.ObservableProgressTask;
 import net.smoofyuniverse.common.task.ProgressTask;
 import net.smoofyuniverse.common.util.GridUtil;
 import net.smoofyuniverse.logger.core.Logger;
@@ -111,7 +111,7 @@ public final class UserInterface extends GridPane {
 			logger.info("Starting generation task #" + id + " .. (" + widthV + "x" + heightV + ", " + whitePxV + ":" + blackPxV + ", seed:" + seedV + ")");
 			
 			Chrono chrono = new Chrono(5);
-			ObservableTask t = new ObservableTask();
+			ObservableProgressTask t = new ObservableProgressTask();
 			t.titleProperty().bind(Bindings.concat("Durée: ", chrono.textProperty()));
 
 			Consumer<ProgressTask> consumer = (task) -> {
