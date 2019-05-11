@@ -25,32 +25,41 @@ plugins {
 }
 
 group 'net.smoofyuniverse'
-version = '1.0.1'
+version = '1.0.2'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
+    mavenCentral()
     maven {
         url 'https://oss.sonatype.org/content/repositories/snapshots'
     }
 }
 
-dependencies {
-    compile 'net.smoofyuniverse:appcommon:1.0.1-SNAPSHOT'
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 
-task shadedJar(type: Jar) {
-    classifier = 'shaded'
-    configurations.compile.each { dep ->
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
+dependencies {
+    shade 'net.smoofyuniverse:appcommon:1.0.2-SNAPSHOT'
+}
+
+jar {
+    configurations.shade.each { dep ->
         from(project.zipTree(dep)) {
             exclude 'META-INF', 'META-INF/**'
         }
     }
+
     manifest {
         attributes('Main-Class': 'net.smoofyuniverse.common.Main')
     }
-    with jar
 }
 
 compileJava.options.encoding = 'UTF-8'

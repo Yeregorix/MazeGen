@@ -27,6 +27,7 @@ import javafx.scene.image.Image;
 import net.smoofyuniverse.common.app.App;
 import net.smoofyuniverse.common.app.Application;
 import net.smoofyuniverse.common.app.Arguments;
+import net.smoofyuniverse.common.environment.source.GithubReleaseSource;
 import net.smoofyuniverse.maze.gen.Maze;
 
 import java.util.Random;
@@ -35,28 +36,19 @@ import java.util.concurrent.Executors;
 public class MazeGen extends Application {
 
 	public MazeGen(Arguments args) {
-		super(args, "MazeGen", "Maze Generator", "1.0.1");
+		super(args, "MazeGen", "Maze Generator", "1.0.2");
 	}
 
 	@Override
 	public void init() {
+		requireUI();
 		initServices(Executors.newSingleThreadExecutor());
+		updateEnvironment(new GithubReleaseSource("Yeregorix", "MazeGen", null, "MazeGen"));
 
-		if (this.UIEnabled) {
-			App.runLater(() -> {
-				initStage(550, 200, false, generateIcon());
-				setScene(new UserInterface()).show();
-			});
-
-			checkForUpdate();
-		} else {
-			skipStage();
-			checkForUpdate();
-
-			getLogger().info("This functionality is not ready yet.");
-
-			shutdown();
-		}
+		App.runLater(() -> {
+			initStage(550, 200, false, generateIcon());
+			setScene(new UserInterface()).show();
+		});
 	}
 
 	public static void main(String[] args) {
