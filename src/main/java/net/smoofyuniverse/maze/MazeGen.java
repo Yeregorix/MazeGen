@@ -36,14 +36,14 @@ import java.util.concurrent.Executors;
 public class MazeGen extends Application {
 
 	public MazeGen(Arguments args) {
-		super(args, "MazeGen", "Maze Generator", "1.0.2");
+		super(args, "MazeGen", "Maze Generator", "1.0.3");
 	}
 
 	@Override
 	public void init() {
 		requireUI();
 		initServices(Executors.newSingleThreadExecutor());
-		updateApplication(new GithubReleaseSource("Yeregorix", "MazeGen", null, "MazeGen"));
+		tryUpdateApplication(new GithubReleaseSource("Yeregorix", "MazeGen", null, "MazeGen"));
 
 		App.runLater(() -> {
 			initStage(550, 200, false, generateIcon());
