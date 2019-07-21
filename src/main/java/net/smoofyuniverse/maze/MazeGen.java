@@ -36,7 +36,7 @@ import java.util.concurrent.Executors;
 public class MazeGen extends Application {
 
 	public MazeGen(Arguments args) {
-		super(args, "MazeGen", "Maze Generator", "1.0.3");
+		super(args, "MazeGen", "Maze Generator", "1.1.0");
 	}
 
 	@Override
