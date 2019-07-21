@@ -63,8 +63,8 @@ public final class UserInterface extends GridPane {
 		
 		LongField seed = new LongField(0);
 		seed.setPrefWidth(Double.MAX_VALUE);
-		
-		IntegerField width = new IntegerField(1, 5000, 30), height = new IntegerField(1, 5000, 30);
+
+		IntegerField width = new IntegerField(1, 10000, 30), height = new IntegerField(1, 10000, 30);
 		IntegerField whitePx = new IntegerField(1, 100, 2), blackPx = new IntegerField(1, 100, 1);
 		
 		Button randomSeed = new Button("Aléatoire");
