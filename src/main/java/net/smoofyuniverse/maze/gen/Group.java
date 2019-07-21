@@ -22,44 +22,30 @@
 
 package net.smoofyuniverse.maze.gen;
 
-public final class Group {
+public class Group {
 	private int size = 1;
-	private Member first, last;
-	
-	private Group(Member m) {
-		this.first = m;
-		this.last = m;
-	}
-	
-	public boolean append(Member m) {
-		return m != null && append(m.group);
-	}
-	
-	public boolean append(Group g) {
-		if (this == g)
+	private Group parent;
+
+	public final boolean append(Group g) {
+		if (g == null)
 			return false;
-		this.last.next = g.first;
-		this.last = g.last;
-		this.size += g.size;
-		
-		Member c = g.first;
-		while (c != null) {
-			c.group = this;
-			c = c.next;
-		}
+
+		Group a = top(), b = g.top();
+		if (a == b)
+			return false;
+
+		a.parent = b;
+		b.size += a.size;
 		return true;
 	}
-	
-	public int size() {
-		return this.size;
+
+	public final Group top() {
+		if (this.parent == null)
+			return this;
+		return this.parent = this.parent.top();
 	}
-	
-	public static class Member {
-		public Group group;
-		private Member next;
-		
-		public Member() {
-			this.group = new Group(this);
-		}
+
+	public final int size() {
+		return top().size;
 	}
 }

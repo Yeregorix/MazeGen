@@ -31,7 +31,6 @@ import java.util.Random;
 public class Maze {
 	public final int width, height;
 	public final Point[] points;
-
 	public ProgressListener listener;
 	
 	private double lastUpdate;
@@ -42,54 +41,37 @@ public class Maze {
 		this.points = new Point[width * height];
 	}
 	
-	private void update(double progress) {
-		if (progress - this.lastUpdate > 0.001)
-			forceUpdate(progress);
-	}
-	
 	public void connectAll(Random r) {
 		if (this.listener != null)
 			this.listener.setCancelled(false);
 
+		double total = (double) this.points.length;
 		forceUpdate(0);
+		int it = 0;
 
 		// Shuffle all
-		int it = 0;
 		for (Point p : this.points) {
 			p.shuffleCombinations(r);
-
-			it++;
-			update(it / (double) this.points.length);
+			update(++it / total);
 		}
 
-		forceUpdate(1);
-
-		// Prepare to watch progress
-		int phase1 = this.points.length;
-		int phase2 = (int) (phase1 * 0.25);
-
-		double p1 = (1d / (double) phase1) * 0.1;
-		double p2 = (1d / (double) phase2) * 0.9;
-
-		double progress = 0;
-		it = 0;
+		total *= 1.25;
 		forceUpdate(0);
+		it = 0;
 
 		// Connect all
 		RandomQueue<Point> queue = RandomQueue.of(this.points, r);
 		while (!allConnected() && (this.listener == null || !this.listener.isCancelled())) {
 			queue.next().connect();
-
-			// Watch progress
-			it++;
-			if (it < phase1)
-				progress += p1;
-			else
-				progress += p2;
-			update(progress);
+			update(++it / total);
 		}
 
 		forceUpdate(1);
+	}
+
+	private void update(double progress) {
+		if (progress - this.lastUpdate > 0.002)
+			forceUpdate(progress);
 	}
 
 	public boolean contains(int x, int y) {
@@ -100,24 +82,23 @@ public class Maze {
 		return contains(x, y) ? this.points[y * this.width + x] : null;
 	}
 
+	public boolean allConnected() {
+		return this.points[0].size() == this.points.length;
+	}
+
 	public void fill() {
+		double total = (double) this.points.length;
 		forceUpdate(0);
 
 		int pos = 0;
 		for (int y = 0; y < this.height; y++) {
 			for (int x = 0; x < this.width; x++) {
 				this.points[pos] = new Point(x, y);
-				pos++;
-
-				update(pos / (double) this.points.length);
+				update(++pos / total);
 			}
 		}
 
 		forceUpdate(1);
-	}
-
-	public boolean allConnected() {
-		return this.points[0].group.size() == this.points.length;
 	}
 
 	private void forceUpdate(double progress) {
@@ -127,6 +108,7 @@ public class Maze {
 	}
 
 	public BufferedImage createImage(int whitePx, int blackPx) {
+		double total = (double) this.points.length;
 		forceUpdate(0);
 
 		int imgWidth = (this.width * whitePx) + ((this.width + 1) * blackPx);
@@ -141,15 +123,15 @@ public class Maze {
 		for (int y = 0; y < this.height; y++) {
 			int imgX = blackPx;
 			for (int x = 0; x < this.width; x++) {
-				Point p = this.points[pos++];
+				Point p = this.points[pos];
 
 				g.fillRect(imgX, imgY, whitePx, whitePx);
-				if (p.connectedRight)
+				if (p.right)
 					g.fillRect(imgX + whitePx, imgY, blackPx, whitePx);
-				if (p.connectedDown)
+				if (p.down)
 					g.fillRect(imgX, imgY + whitePx, whitePx, blackPx);
 
-				update(pos / (double) this.points.length);
+				update(++pos / total);
 				imgX += whitePx + blackPx;
 			}
 			imgY += whitePx + blackPx;
@@ -159,13 +141,13 @@ public class Maze {
 
 		return img;
 	}
-	
-	public class Point extends Group.Member {
+
+	public class Point extends Group {
 		public final int posX, posY;
 
-		private boolean connectedRight = false, connectedDown = false;
+		private boolean right = false, down = false;
 		private Direction[] directions;
-		private int dirIndex;
+		private int index;
 
 		public Point(int posX, int posY) {
 			this.posX = posX;
@@ -174,13 +156,13 @@ public class Maze {
 
 		public void shuffleCombinations(Random r) {
 			this.directions = Direction.randomCombination(r);
-			this.dirIndex = -1;
+			this.index = -1;
 		}
 
 		public void connect() {
-			while (this.dirIndex < 3) {
-				this.dirIndex++;
-				if (connect(this.directions[this.dirIndex]))
+			while (this.index < 3) {
+				this.index++;
+				if (connect(this.directions[this.index]))
 					return;
 			}
 		}
@@ -191,21 +173,21 @@ public class Maze {
 
 		public boolean connect(Direction d) {
 			Point p2 = getRelative(d);
-			if (!this.group.append(p2))
+			if (!append(p2))
 				return false;
 
 			switch (d) {
 			case UP:
-				p2.connectedDown = true;
+				p2.down = true;
 				break;
 			case DOWN:
-				this.connectedDown = true;
+				this.down = true;
 				break;
 			case LEFT:
-				p2.connectedRight = true;
+				p2.right = true;
 				break;
 			case RIGHT:
-				this.connectedRight = true;
+				this.right = true;
 				break;
 			}
 			return true;
