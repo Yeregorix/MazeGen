@@ -32,7 +32,7 @@ public class Maze {
 	public final int width, height;
 	public final Point[] points;
 	public ProgressListener listener;
-	
+
 	private double lastUpdate;
 	
 	public Maze(int width, int height) {
@@ -40,12 +40,27 @@ public class Maze {
 		this.height = height;
 		this.points = new Point[width * height];
 	}
+
+	public void fill() {
+		double total = this.points.length;
+		forceUpdate(0);
+
+		int pos = 0;
+		for (int y = 0; y < this.height; y++) {
+			for (int x = 0; x < this.width; x++) {
+				this.points[pos] = new Point(x, y);
+				update(++pos / total);
+			}
+		}
+
+		forceUpdate(1);
+	}
 	
 	public void connectAll(Random r) {
 		if (this.listener != null)
 			this.listener.setCancelled(false);
 
-		double total = (double) this.points.length;
+		double total = this.points.length;
 		forceUpdate(0);
 		int it = 0;
 
@@ -55,15 +70,20 @@ public class Maze {
 			update(++it / total);
 		}
 
-		total *= 1.25;
+		int max = this.points.length - 1;
+		total = max;
+
 		forceUpdate(0);
-		it = 0;
+		int connections = 0;
 
 		// Connect all
 		RandomQueue<Point> queue = RandomQueue.of(this.points, r);
-		while (!allConnected() && (this.listener == null || !this.listener.isCancelled())) {
-			queue.next().connect();
-			update(++it / total);
+		while (this.listener == null || !this.listener.isCancelled()) {
+			if (queue.next().connect()) {
+				update(++connections / total);
+				if (connections == max)
+					break;
+			}
 		}
 
 		forceUpdate(1);
@@ -82,25 +102,6 @@ public class Maze {
 		return contains(x, y) ? this.points[y * this.width + x] : null;
 	}
 
-	public boolean allConnected() {
-		return this.points[0].size() == this.points.length;
-	}
-
-	public void fill() {
-		double total = (double) this.points.length;
-		forceUpdate(0);
-
-		int pos = 0;
-		for (int y = 0; y < this.height; y++) {
-			for (int x = 0; x < this.width; x++) {
-				this.points[pos] = new Point(x, y);
-				update(++pos / total);
-			}
-		}
-
-		forceUpdate(1);
-	}
-
 	private void forceUpdate(double progress) {
 		this.lastUpdate = progress;
 		if (this.listener != null)
@@ -108,7 +109,7 @@ public class Maze {
 	}
 
 	public BufferedImage createImage(int whitePx, int blackPx) {
-		double total = (double) this.points.length;
+		double total = this.points.length;
 		forceUpdate(0);
 
 		int imgWidth = (this.width * whitePx) + ((this.width + 1) * blackPx);
@@ -159,12 +160,13 @@ public class Maze {
 			this.index = -1;
 		}
 
-		public void connect() {
+		public boolean connect() {
 			while (this.index < 3) {
 				this.index++;
 				if (connect(this.directions[this.index]))
-					return;
+					return true;
 			}
+			return false;
 		}
 
 		public Point getRelative(Direction d) {

@@ -23,7 +23,6 @@
 package net.smoofyuniverse.maze.gen;
 
 public class Group {
-	private int size = 1;
 	private Group parent;
 
 	public final boolean append(Group g) {
@@ -35,7 +34,6 @@ public class Group {
 			return false;
 
 		a.parent = b;
-		b.size += a.size;
 		return true;
 	}
 
@@ -43,9 +41,5 @@ public class Group {
 		if (this.parent == null)
 			return this;
 		return this.parent = this.parent.top();
-	}
-
-	public final int size() {
-		return top().size;
 	}
 }
