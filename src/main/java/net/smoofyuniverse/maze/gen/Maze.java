@@ -29,7 +29,7 @@ import java.awt.image.BufferedImage;
 import java.util.Random;
 
 public class Maze {
-	public final int width, height;
+	public final int width, height, size;
 	public final Point[] points;
 	public ProgressListener listener;
 
@@ -38,19 +38,16 @@ public class Maze {
 	public Maze(int width, int height) {
 		this.width = width;
 		this.height = height;
-		this.points = new Point[width * height];
+		this.size = width * height;
+		this.points = new Point[this.size];
 	}
 
 	public void fill() {
-		double total = this.points.length;
 		forceUpdate(0);
 
-		int pos = 0;
-		for (int y = 0; y < this.height; y++) {
-			for (int x = 0; x < this.width; x++) {
-				this.points[pos] = new Point(x, y);
-				update(++pos / total);
-			}
+		for (int i = 0; i < this.size; i++) {
+			this.points[i] = new Point(i);
+			update(i / (double) this.size);
 		}
 
 		forceUpdate(1);
@@ -60,27 +57,20 @@ public class Maze {
 		if (this.listener != null)
 			this.listener.setCancelled(false);
 
-		double total = this.points.length;
 		forceUpdate(0);
-		int it = 0;
 
-		// Shuffle all
-		for (Point p : this.points) {
-			p.shuffleCombinations(r);
-			update(++it / total);
+		for (int i = 0; i < this.size; i++) {
+			this.points[i].shuffleCombinations(r);
+			update(i / (double) this.size);
 		}
 
-		int max = this.points.length - 1;
-		total = max;
-
 		forceUpdate(0);
-		int connections = 0;
 
-		// Connect all
+		int max = this.size - 1, connections = 0;
 		RandomQueue<Point> queue = RandomQueue.of(this.points, r);
 		while (this.listener == null || !this.listener.isCancelled()) {
 			if (queue.next().connect()) {
-				update(++connections / total);
+				update(++connections / (double) max);
 				if (connections == max)
 					break;
 			}
@@ -94,14 +84,6 @@ public class Maze {
 			forceUpdate(progress);
 	}
 
-	public boolean contains(int x, int y) {
-		return x >= 0 && x < this.width && y >= 0 && y < this.height;
-	}
-
-	public Point get(int x, int y) {
-		return contains(x, y) ? this.points[y * this.width + x] : null;
-	}
-
 	private void forceUpdate(double progress) {
 		this.lastUpdate = progress;
 		if (this.listener != null)
@@ -109,7 +91,6 @@ public class Maze {
 	}
 
 	public BufferedImage createImage(int whitePx, int blackPx) {
-		double total = this.points.length;
 		forceUpdate(0);
 
 		int imgWidth = (this.width * whitePx) + ((this.width + 1) * blackPx);
@@ -132,7 +113,7 @@ public class Maze {
 				if (p.down)
 					g.fillRect(imgX, imgY + whitePx, whitePx, blackPx);
 
-				update(++pos / total);
+				update(++pos / (double) this.size);
 				imgX += whitePx + blackPx;
 			}
 			imgY += whitePx + blackPx;
@@ -144,15 +125,14 @@ public class Maze {
 	}
 
 	public class Point extends Group {
-		public final int posX, posY;
+		public final int position;
 
 		private boolean right = false, down = false;
 		private Direction[] directions;
-		private int index;
+		private byte index;
 
-		public Point(int posX, int posY) {
-			this.posX = posX;
-			this.posY = posY;
+		public Point(int position) {
+			this.position = position;
 		}
 
 		public void shuffleCombinations(Random r) {
@@ -169,30 +149,53 @@ public class Maze {
 			return false;
 		}
 
-		public Point getRelative(Direction d) {
-			return get(this.posX + d.dX, this.posY + d.dY);
-		}
-
 		public boolean connect(Direction d) {
-			Point p2 = getRelative(d);
-			if (!append(p2))
-				return false;
-
 			switch (d) {
-			case UP:
-				p2.down = true;
-				break;
-			case DOWN:
-				this.down = true;
-				break;
-			case LEFT:
-				p2.right = true;
-				break;
-			case RIGHT:
-				this.right = true;
-				break;
+				case UP:
+					int rel = this.position - Maze.this.width;
+					if (rel < 0)
+						return false;
+
+					Point p = Maze.this.points[rel];
+					if (!append(p))
+						return false;
+
+					p.down = true;
+					return true;
+				case DOWN:
+					rel = this.position + Maze.this.width;
+					if (rel >= Maze.this.size)
+						return false;
+
+					p = Maze.this.points[rel];
+					if (!append(p))
+						return false;
+
+					this.down = true;
+					return true;
+				case LEFT:
+					if (this.position % Maze.this.width == 0)
+						return false;
+
+					p = Maze.this.points[this.position - 1];
+					if (!append(p))
+						return false;
+
+					p.right = true;
+					return true;
+				case RIGHT:
+					rel = this.position + 1;
+					if (rel % Maze.this.width == 0)
+						return false;
+
+					p = Maze.this.points[rel];
+					if (!append(p))
+						return false;
+
+					this.right = true;
+					return true;
 			}
-			return true;
+			throw new IllegalArgumentException();
 		}
 	}
 }

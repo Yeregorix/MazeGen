@@ -25,22 +25,12 @@ package net.smoofyuniverse.maze.gen;
 import java.util.Random;
 
 public enum Direction {
-	UP(0, -1),
-	DOWN(0, +1),
-	LEFT(-1, 0),
-	RIGHT(+1, 0);
+	UP, DOWN, LEFT, RIGHT;
 
 	private static final Direction[][] combinations = new Direction[24][];
 
 	public static Direction[] randomCombination(Random r) {
 		return combinations[r.nextInt(24)];
-	}
-
-	public final int dX, dY;
-
-	Direction(int dX, int dY) {
-		this.dX = dX;
-		this.dY = dY;
 	}
 
 	static {
