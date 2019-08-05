@@ -43,12 +43,13 @@ public class MazeGen extends Application {
 	public void init() {
 		requireUI();
 		initServices(Executors.newSingleThreadExecutor());
-		tryUpdateApplication(new GithubReleaseSource("Yeregorix", "MazeGen", null, "MazeGen"));
 
 		App.runLater(() -> {
 			initStage(550, 200, false, generateIcon());
 			setScene(new UserInterface()).show();
 		});
+
+		tryUpdateApplication(new GithubReleaseSource("Yeregorix", "MazeGen", null, "MazeGen"));
 	}
 
 	public static void main(String[] args) {
