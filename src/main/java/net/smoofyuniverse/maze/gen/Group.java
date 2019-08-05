@@ -26,9 +26,6 @@ public class Group {
 	private Group parent;
 
 	public final boolean append(Group g) {
-		if (g == null)
-			return false;
-
 		Group a = top(), b = g.top();
 		if (a == b)
 			return false;

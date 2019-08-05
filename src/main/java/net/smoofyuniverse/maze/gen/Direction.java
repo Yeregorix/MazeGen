@@ -29,8 +29,8 @@ public enum Direction {
 
 	private static final Direction[][] combinations = new Direction[24][];
 
-	public static Direction[] randomCombination(Random r) {
-		return combinations[r.nextInt(24)];
+	public static Direction[] randomCombination(Random random) {
+		return combinations[random.nextInt(24)];
 	}
 
 	static {

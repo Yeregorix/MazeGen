@@ -36,6 +36,11 @@ public class Maze {
 	private double lastUpdate;
 	
 	public Maze(int width, int height) {
+		if (width <= 0)
+			throw new IllegalArgumentException("width");
+		if (height <= 0)
+			throw new IllegalArgumentException("height");
+
 		this.width = width;
 		this.height = height;
 		this.size = width * height;
@@ -52,29 +57,65 @@ public class Maze {
 
 		forceUpdate(1);
 	}
-	
-	public void connectAll(Random r) {
+
+	public void connectAll(Random random, double errorFactor) {
+		if (random == null)
+			throw new IllegalArgumentException("random");
+		if (errorFactor < 0 || errorFactor > 1)
+			throw new IllegalArgumentException("errorFactor");
+
 		if (this.listener != null)
 			this.listener.setCancelled(false);
 
 		forceUpdate(0);
 
 		for (int i = 0; i < this.size; i++) {
-			this.points[i].shuffleCombinations(r);
+			this.points[i].shuffleCombinations(random);
 			update(i / (double) this.size);
 		}
 
 		forceUpdate(0);
 
 		int max = this.size - 1, connections = 0;
-		RandomQueue<Point> queue = RandomQueue.of(this.points, r);
+		RandomQueue<Point> queue = RandomQueue.of(this.points, random);
 		while (this.listener == null || !this.listener.isCancelled()) {
-			if (queue.next().connect()) {
+			if (queue.next().tryConnect()) {
 				update(++connections / (double) max);
 				if (connections == max)
 					break;
 			}
 		}
+
+		if (this.listener != null && this.listener.isCancelled())
+			return;
+
+		forceUpdate(1);
+
+		int errors = (int) ((this.size - this.width - this.height + 1) * errorFactor);
+		if (errors == 0)
+			return;
+
+		forceUpdate(0);
+
+		for (int i = 0; i < this.size; i++) {
+			this.points[i].resetIndex();
+			update(i / (double) this.size);
+		}
+
+		forceUpdate(0);
+
+		connections = 0;
+		queue.reset();
+		while (this.listener == null || !this.listener.isCancelled()) {
+			if (queue.next().forceConnect()) {
+				update(++connections / (double) errors);
+				if (connections == errors)
+					break;
+			}
+		}
+
+		if (this.listener != null && this.listener.isCancelled())
+			return;
 
 		forceUpdate(1);
 	}
@@ -135,21 +176,25 @@ public class Maze {
 			this.position = position;
 		}
 
-		public void shuffleCombinations(Random r) {
-			this.directions = Direction.randomCombination(r);
+		public void shuffleCombinations(Random random) {
+			this.directions = Direction.randomCombination(random);
+			resetIndex();
+		}
+
+		public void resetIndex() {
 			this.index = -1;
 		}
 
-		public boolean connect() {
+		public boolean tryConnect() {
 			while (this.index < 3) {
 				this.index++;
-				if (connect(this.directions[this.index]))
+				if (tryConnect(this.directions[this.index]))
 					return true;
 			}
 			return false;
 		}
 
-		public boolean connect(Direction d) {
+		public boolean tryConnect(Direction d) {
 			switch (d) {
 				case UP:
 					int rel = this.position - Maze.this.width;
@@ -190,6 +235,62 @@ public class Maze {
 
 					p = Maze.this.points[rel];
 					if (!append(p))
+						return false;
+
+					this.right = true;
+					return true;
+			}
+			throw new IllegalArgumentException();
+		}
+
+		public boolean forceConnect() {
+			while (this.index < 3) {
+				this.index++;
+				if (forceConnect(this.directions[this.index]))
+					return true;
+			}
+			return false;
+		}
+
+		public boolean forceConnect(Direction d) {
+			switch (d) {
+				case UP:
+					int rel = this.position - Maze.this.width;
+					if (rel < 0)
+						return false;
+
+					Point p = Maze.this.points[rel];
+					if (p.down)
+						return false;
+
+					p.down = true;
+					return true;
+				case DOWN:
+					rel = this.position + Maze.this.width;
+					if (rel >= Maze.this.size)
+						return false;
+
+					if (this.down)
+						return false;
+
+					this.down = true;
+					return true;
+				case LEFT:
+					if (this.position % Maze.this.width == 0)
+						return false;
+
+					p = Maze.this.points[this.position - 1];
+					if (p.right)
+						return false;
+
+					p.right = true;
+					return true;
+				case RIGHT:
+					rel = this.position + 1;
+					if (rel % Maze.this.width == 0)
+						return false;
+
+					if (this.right)
 						return false;
 
 					this.right = true;

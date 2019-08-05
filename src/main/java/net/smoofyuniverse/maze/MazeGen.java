@@ -58,7 +58,7 @@ public class MazeGen extends Application {
 	private static Image generateIcon() {
 		Maze m = new Maze(5, 5);
 		m.fill();
-		m.connectAll(new Random());
+		m.connectAll(new Random(), 0);
 		return SwingFXUtils.toFXImage(m.createImage(4, 2), null);
 	}
 }

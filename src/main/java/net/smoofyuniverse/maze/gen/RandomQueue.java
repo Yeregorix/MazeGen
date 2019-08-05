@@ -29,14 +29,18 @@ public class RandomQueue<T> {
 	private Random random;
 	private T[] values;
 	private int remainingSize;
-	
-	public RandomQueue(T[] values, Random r) {
+
+	public RandomQueue(T[] values, Random random) {
 		this.values = values;
-		this.random = r;
+		this.random = random;
 	}
 
-	public static <T> RandomQueue<T> of(T[] values, Random r) {
-		return new RandomQueue(Arrays.copyOf(values, values.length), r);
+	public void reset() {
+		this.remainingSize = 0;
+	}
+
+	public static <T> RandomQueue<T> of(T[] values, Random random) {
+		return new RandomQueue(Arrays.copyOf(values, values.length), random);
 	}
 	
 	public T next() {
