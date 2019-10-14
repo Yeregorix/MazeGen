@@ -45,7 +45,7 @@ public class MazeGen extends Application {
 		initServices(Executors.newSingleThreadExecutor());
 
 		App.runLater(() -> {
-			initStage(550, 200, false, generateIcon());
+			initStage(550, 200, generateIcon());
 			setScene(new UserInterface()).show();
 		});
 
