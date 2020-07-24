@@ -26,8 +26,8 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class RandomQueue<T> {
-	private Random random;
-	private T[] values;
+	private final Random random;
+	private final T[] values;
 	private int remainingSize;
 
 	public RandomQueue(T[] values, Random random) {
