@@ -34,11 +34,11 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import net.smoofyuniverse.common.app.App;
+import net.smoofyuniverse.common.fx.animation.Stopwatch;
 import net.smoofyuniverse.common.fx.dialog.Popup;
 import net.smoofyuniverse.common.fx.field.DoubleField;
 import net.smoofyuniverse.common.fx.field.IntegerField;
 import net.smoofyuniverse.common.fx.field.LongField;
-import net.smoofyuniverse.common.fx.task.Chrono;
 import net.smoofyuniverse.common.fx.task.ObservableProgressTask;
 import net.smoofyuniverse.common.task.ProgressTask;
 import net.smoofyuniverse.common.util.GridUtil;
@@ -110,50 +110,50 @@ public final class UserInterface extends GridPane {
 			double errorV = error.getValue();
 			int whitePxV = whitePx.getValue(), blackPxV = blackPx.getValue();
 			int id = ++taskId;
-			
+
 			logger.info("Starting generation task #" + id + " .. (" + widthV + "x" + heightV + ", " + whitePxV + ":" + blackPxV + ", seed:" + seedV + ")");
-			
-			Chrono chrono = new Chrono(5);
+
+			Stopwatch stopwatch = new Stopwatch(5);
 			ObservableProgressTask t = new ObservableProgressTask();
-			t.titleProperty().bind(Bindings.concat("Durée: ", chrono.textProperty()));
+			t.titleProperty().bind(Bindings.concat("Durée: ", stopwatch.textProperty()));
 
 			Consumer<ProgressTask> consumer = (task) -> {
-				chrono.start();
+				stopwatch.start();
 
 				task.setMessage("Initialisation: " + widthV + "x" + heightV);
 				Maze maze = new Maze(widthV, heightV);
 				maze.listener = task;
 				task.setMessage("Graine: " + seedV);
 				Random r = new Random(seedV);
-				
+
 				task.setMessage("Instanciation: " + maze.points.length + " points.");
 				maze.fill();
 				task.setMessage("Connection des points ..");
 				maze.connectAll(r, errorV);
 				
 				if (task.isCancelled()) {
-					chrono.pause();
+					stopwatch.pause();
 					System.gc();
-					
-					logger.info("Task #" + id + " has been cancelled. Duration: " + chrono.getText());
+
+					logger.info("Task #" + id + " has been cancelled. Duration: " + stopwatch.getText());
 				} else {
 					task.setMessage("Génération de l'image: " + whitePxV + ":" + blackPxV);
 					BufferedImage img = maze.createImage(whitePxV, blackPxV);
-					
-					chrono.pause();
+
+					stopwatch.pause();
 					System.gc();
-					
+
 					try {
 						task.setMessage("Écriture ..");
 						ImageIO.write(img, "png", f);
-						
-						logger.info("Task #" + id + " has terminated. Duration: " + chrono.getText());
-						
-						Popup.info().message("Graine: " + seedV + "\nDimensions: " + widthV + "x" + heightV + "\nPixels: " + whitePxV + ":" + blackPxV + "\nDurée: " + chrono.getText())
-						.title("Opération terminée").header("L'image labyrinthe a été générée et écrite avec succès.").show();
+
+						logger.info("Task #" + id + " has terminated. Duration: " + stopwatch.getText());
+
+						Popup.info().message("Graine: " + seedV + "\nDimensions: " + widthV + "x" + heightV + "\nPixels: " + whitePxV + ":" + blackPxV + "\nDurée: " + stopwatch.getText())
+								.title("Opération terminée").header("L'image labyrinthe a été générée et écrite avec succès.").show();
 					} catch (IOException e) {
-						logger.error("Task #" + id + " has terminated but failed to write the generated image. Duration: " + chrono.getText(), e);
-						
+						logger.error("Task #" + id + " has terminated but failed to write the generated image. Duration: " + stopwatch.getText(), e);
+
 						Popup.error().title("Erreur d'écriture").header("Une erreur est survenue lors de l'écriture de l'image.").message(e).show();
 					}
 				}
