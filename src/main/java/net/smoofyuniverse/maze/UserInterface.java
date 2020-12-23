@@ -28,7 +28,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
@@ -61,40 +60,29 @@ public final class UserInterface extends GridPane {
 	public UserInterface() {
 		Label title = new Label(App.get().getName());
 		title.setFont(Font.font("Monospaced", FontWeight.BOLD, 24));
-		
+
 		LongField seed = new LongField(0);
 		IntegerField width = new IntegerField(1, 10000, 30), height = new IntegerField(1, 10000, 30);
 		DoubleField error = new DoubleField(0, 1, 0);
 		IntegerField whitePx = new IntegerField(1, 100, 2), blackPx = new IntegerField(1, 100, 1);
-		
+
 		Button randomSeed = new Button("Aléatoire");
 		Button genMaze = new Button("Générer");
-		randomSeed.setPrefWidth(Double.MAX_VALUE);
-		genMaze.setPrefWidth(Double.MAX_VALUE);
+		randomSeed.setMaxWidth(Double.MAX_VALUE);
+		genMaze.setMaxWidth(Double.MAX_VALUE);
 
-		add(new Label("Graine:"), 0, 0);
-		add(seed, 1, 0);
-		add(randomSeed, 2, 0);
+		addRow(0, new Label("Graine:"), seed, randomSeed);
+		addRow(1, new Label("Dimensions:"), width, height);
+		addRow(2, new Label("Erreur:"), error);
+		addRow(3, new Label("Pixels:"), whitePx, blackPx);
+		add(genMaze, 0, 4, 3, 1);
 
-		add(new Label("Dimensions:"), 0, 1);
-		add(width, 1, 1);
-		add(height, 2, 1);
-
-		add(new Label("Erreur:"), 0, 2);
-		add(error, 1, 2);
-
-		add(new Label("Pixels:"), 0, 3);
-		add(whitePx, 1, 3);
-		add(blackPx, 2, 3);
-
-		add(new StackPane(genMaze), 0, 4, 3, 1);
-		
 		setAlignment(Pos.CENTER);
 		setPadding(new Insets(10));
 		setVgap(5);
 		setHgap(5);
 		getColumnConstraints().addAll(GridUtil.createColumn(16), GridUtil.createColumn(42), GridUtil.createColumn(42));
-		
+
 		FileChooser chooser = new FileChooser();
 		chooser.getExtensionFilters().add(new ExtensionFilter("Image", "*.png"));
 		
