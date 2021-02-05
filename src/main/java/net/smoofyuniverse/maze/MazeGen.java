@@ -24,14 +24,13 @@ package net.smoofyuniverse.maze;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
-import net.smoofyuniverse.common.app.App;
 import net.smoofyuniverse.common.app.Application;
 import net.smoofyuniverse.common.app.Arguments;
+import net.smoofyuniverse.common.environment.ApplicationUpdater;
 import net.smoofyuniverse.common.environment.source.GithubReleaseSource;
 import net.smoofyuniverse.maze.gen.Maze;
 
 import java.util.Random;
-import java.util.concurrent.Executors;
 
 public class MazeGen extends Application {
 
@@ -41,15 +40,15 @@ public class MazeGen extends Application {
 
 	@Override
 	public void init() {
-		requireUI();
-		initServices(Executors.newSingleThreadExecutor());
+		requireGUI();
+		initServices();
 
-		App.runLater(() -> {
+		runLater(() -> {
 			initStage(550, 200, generateIcon());
 			setScene(new UserInterface()).show();
 		});
 
-		tryUpdateApplication(new GithubReleaseSource("Yeregorix", "MazeGen", null, "MazeGen"));
+		new ApplicationUpdater(this, new GithubReleaseSource("Yeregorix", "MazeGen", null, "MazeGen", getConnectionConfig())).run();
 	}
 
 	public static void main(String[] args) {
