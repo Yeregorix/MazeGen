@@ -99,7 +99,7 @@ public final class UserInterface extends GridPane {
 			int whitePxV = whitePx.getValue(), blackPxV = blackPx.getValue();
 			int id = ++taskId;
 
-			logger.info("Starting generation task #" + id + " .. (" + widthV + "x" + heightV + ", " + whitePxV + ":" + blackPxV + ", seed:" + seedV + ")");
+			logger.info("Starting generation task #" + id + " ... (" + widthV + "x" + heightV + ", " + whitePxV + ":" + blackPxV + ", seed:" + seedV + ")");
 
 			Stopwatch stopwatch = new Stopwatch(5);
 			ObservableProgressTask t = new ObservableProgressTask();
@@ -116,7 +116,7 @@ public final class UserInterface extends GridPane {
 
 				task.setMessage("Instanciation: " + maze.points.length + " points.");
 				maze.fill();
-				task.setMessage("Connection des points ..");
+				task.setMessage("Connection des points ...");
 				maze.connectAll(r, errorV);
 				
 				if (task.isCancelled()) {
@@ -132,7 +132,7 @@ public final class UserInterface extends GridPane {
 					System.gc();
 
 					try {
-						task.setMessage("Écriture ..");
+						task.setMessage("Écriture ...");
 						ImageIO.write(img, "png", f);
 
 						logger.info("Task #" + id + " has terminated. Duration: " + stopwatch.getText());
@@ -146,8 +146,8 @@ public final class UserInterface extends GridPane {
 					}
 				}
 			};
-			
-			Popup.consumer(consumer).task(t).title("Génération ..").submitAndWait();
+
+			Popup.consumer(consumer).task(t).title("Génération ...").submitAndWait();
 		});
 	}
 }
