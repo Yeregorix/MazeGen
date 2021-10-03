@@ -23,36 +23,28 @@
 package net.smoofyuniverse.maze;
 
 import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.stage.Stage;
 import net.smoofyuniverse.common.app.Application;
-import net.smoofyuniverse.common.app.Arguments;
-import net.smoofyuniverse.common.environment.ApplicationUpdater;
-import net.smoofyuniverse.common.environment.source.GithubReleaseSource;
+import net.smoofyuniverse.common.environment.source.GitHubReleaseSource;
 import net.smoofyuniverse.maze.gen.Maze;
 
 import java.util.Random;
 
 public class MazeGen extends Application {
 
-	public MazeGen(Arguments args) {
-		super(args, "MazeGen", "Maze Generator", "1.3.2");
-	}
-
 	@Override
-	public void init() {
-		requireGUI();
-		initServices();
-
+	public void run() {
 		runLater(() -> {
-			initStage(550, 200, generateIcon());
-			setScene(new UserInterface()).show();
+			Stage stage = createStage(550, 200, generateIcon());
+			setStage(stage);
+
+			stage.setScene(new Scene(new UserInterface()));
+			stage.show();
 		});
 
-		new ApplicationUpdater(this, new GithubReleaseSource("Yeregorix", "MazeGen", null, "MazeGen", getConnectionConfig())).run();
-	}
-
-	public static void main(String[] args) {
-		new MazeGen(Arguments.parse(args)).launch();
+		getManager().runUpdater(new GitHubReleaseSource("Yeregorix", "MazeGen", null, "MazeGen", getManager().getConnectionConfig()));
 	}
 	
 	private static Image generateIcon() {

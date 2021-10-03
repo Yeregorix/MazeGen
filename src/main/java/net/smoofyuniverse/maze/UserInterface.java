@@ -32,17 +32,18 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import net.smoofyuniverse.common.app.Application;
+import net.smoofyuniverse.common.app.ApplicationManager;
 import net.smoofyuniverse.common.fx.animation.Stopwatch;
 import net.smoofyuniverse.common.fx.dialog.Popup;
 import net.smoofyuniverse.common.fx.field.DoubleField;
 import net.smoofyuniverse.common.fx.field.IntegerField;
 import net.smoofyuniverse.common.fx.field.LongField;
 import net.smoofyuniverse.common.fx.task.ObservableProgressTask;
+import net.smoofyuniverse.common.logger.ApplicationLogger;
 import net.smoofyuniverse.common.task.ProgressTask;
 import net.smoofyuniverse.common.util.GridUtil;
-import net.smoofyuniverse.logger.core.Logger;
 import net.smoofyuniverse.maze.gen.Maze;
+import org.slf4j.Logger;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -52,13 +53,13 @@ import java.util.Random;
 import java.util.function.Consumer;
 
 public final class UserInterface extends GridPane {
-	private static final Logger logger = Logger.get("UserInterface");
+	private static final Logger logger = ApplicationLogger.get(UserInterface.class);
 	private static final Random random = new Random();
 
 	private static int taskId = 0;
 
 	public UserInterface() {
-		Label title = new Label(Application.get().getName());
+		Label title = new Label(ApplicationManager.get().getName());
 		title.setFont(Font.font("Monospaced", FontWeight.BOLD, 24));
 
 		LongField seed = new LongField(0);
@@ -81,7 +82,7 @@ public final class UserInterface extends GridPane {
 		setPadding(new Insets(10));
 		setVgap(5);
 		setHgap(5);
-		getColumnConstraints().addAll(GridUtil.createColumn(16), GridUtil.createColumn(42), GridUtil.createColumn(42));
+		getColumnConstraints().addAll(GridUtil.column(16), GridUtil.column(42), GridUtil.column(42));
 
 		FileChooser chooser = new FileChooser();
 		chooser.getExtensionFilters().add(new ExtensionFilter("Image", "*.png"));
@@ -99,7 +100,7 @@ public final class UserInterface extends GridPane {
 			int whitePxV = whitePx.getValue(), blackPxV = blackPx.getValue();
 			int id = ++taskId;
 
-			logger.info("Starting generation task #" + id + " ... (" + widthV + "x" + heightV + ", " + whitePxV + ":" + blackPxV + ", seed:" + seedV + ")");
+			logger.info("Starting generation task #{} ... ({}x{}, {}:{}, seed:{})", id, widthV, heightV, whitePxV, blackPxV, seedV);
 
 			Stopwatch stopwatch = new Stopwatch(5);
 			ObservableProgressTask t = new ObservableProgressTask();
@@ -123,7 +124,7 @@ public final class UserInterface extends GridPane {
 					stopwatch.pause();
 					System.gc();
 
-					logger.info("Task #" + id + " has been cancelled. Duration: " + stopwatch.getText());
+					logger.info("Task #{} has been cancelled. Duration: {}", id, stopwatch.getText());
 				} else {
 					task.setMessage("Génération de l'image: " + whitePxV + ":" + blackPxV);
 					BufferedImage img = maze.createImage(whitePxV, blackPxV);
@@ -135,12 +136,12 @@ public final class UserInterface extends GridPane {
 						task.setMessage("Écriture ...");
 						ImageIO.write(img, "png", f);
 
-						logger.info("Task #" + id + " has terminated. Duration: " + stopwatch.getText());
+						logger.info("Task #{} has terminated. Duration: {}", id, stopwatch.getText());
 
 						Popup.info().message("Graine: " + seedV + "\nDimensions: " + widthV + "x" + heightV + "\nPixels: " + whitePxV + ":" + blackPxV + "\nDurée: " + stopwatch.getText())
 								.title("Opération terminée").header("L'image labyrinthe a été générée et écrite avec succès.").show();
 					} catch (IOException e) {
-						logger.error("Task #" + id + " has terminated but failed to write the generated image. Duration: " + stopwatch.getText(), e);
+						logger.error("Task #{} has terminated but failed to write the generated image. Duration: {}", id, stopwatch.getText(), e);
 
 						Popup.error().title("Erreur d'écriture").header("Une erreur est survenue lors de l'écriture de l'image.").message(e).show();
 					}
