@@ -67,5 +67,4 @@ dependencies {
 
 app {
     application = "net.smoofyuniverse.maze.MazeGen"
-    dependencies = ["javafx-extra"]
 }

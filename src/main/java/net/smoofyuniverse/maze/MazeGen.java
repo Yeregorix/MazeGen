@@ -32,7 +32,24 @@ import net.smoofyuniverse.maze.gen.Maze;
 
 import java.util.Random;
 
+import static net.smoofyuniverse.common.app.ApplicationManager.getJavaVersion;
+
 public class MazeGen extends Application {
+
+	@Override
+	public void init() throws Exception {
+		if (!detectJavaFXSwing() && getJavaVersion() >= 11)
+			getManager().setupDependencies("javafx-extra");
+	}
+
+	private static boolean detectJavaFXSwing() {
+		try {
+			Class.forName("javafx.embed.swing.SwingFXUtils");
+			return true;
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
+	}
 
 	@Override
 	public void run() {
