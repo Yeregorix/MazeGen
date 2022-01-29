@@ -58,10 +58,10 @@ dependencyExport {
 }
 
 dependencies {
-    appcommon 'net.smoofyuniverse:appcommon:1.3.5'
+    appcommon 'net.smoofyuniverse:appcommon:1.3.6'
 
     for (classifier in dependencyExport.javafx.constraints.names) {
-        javaFXRuntime 'org.openjfx:javafx-swing:17:' + classifier
+        javaFXRuntime 'org.openjfx:javafx-swing:17.0.2:' + classifier
     }
 }
 
