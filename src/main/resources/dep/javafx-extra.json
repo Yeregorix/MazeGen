@@ -1,0 +1,62 @@
+[
+    {
+        "name": "org.openjfx:javafx-swing:21.0.1:linux",
+        "url": "https://repo.maven.apache.org/maven2/org/openjfx/javafx-swing/21.0.1/javafx-swing-21.0.1-linux.jar",
+        "size": 89704,
+        "digest": "9e8c594ab2b3fc3b668e159893dd9349e1851f00bcbfb3881a10ad3b79480479",
+        "systems": [
+            "linux"
+        ],
+        "archs": [
+            "x64"
+        ]
+    },
+    {
+        "name": "org.openjfx:javafx-swing:21.0.1:linux-aarch64",
+        "url": "https://repo.maven.apache.org/maven2/org/openjfx/javafx-swing/21.0.1/javafx-swing-21.0.1-linux-aarch64.jar",
+        "size": 89704,
+        "digest": "56b09788b594f001babdb83f50e09fcdb6678fd98df4ac7d055a0a65fb181020",
+        "systems": [
+            "linux"
+        ],
+        "archs": [
+            "arm64"
+        ]
+    },
+    {
+        "name": "org.openjfx:javafx-swing:21.0.1:mac",
+        "url": "https://repo.maven.apache.org/maven2/org/openjfx/javafx-swing/21.0.1/javafx-swing-21.0.1-mac.jar",
+        "size": 89704,
+        "digest": "d5fac4483354344fe098ff586ae22ebd345c3dfefb0f63f753a6072861087fbf",
+        "systems": [
+            "macos"
+        ],
+        "archs": [
+            "x64"
+        ]
+    },
+    {
+        "name": "org.openjfx:javafx-swing:21.0.1:mac-aarch64",
+        "url": "https://repo.maven.apache.org/maven2/org/openjfx/javafx-swing/21.0.1/javafx-swing-21.0.1-mac-aarch64.jar",
+        "size": 89704,
+        "digest": "f51872690e48b0186913e7cc7cc016dc3752c700c900caf32d8c92f9b57e64aa",
+        "systems": [
+            "macos"
+        ],
+        "archs": [
+            "arm64"
+        ]
+    },
+    {
+        "name": "org.openjfx:javafx-swing:21.0.1:win",
+        "url": "https://repo.maven.apache.org/maven2/org/openjfx/javafx-swing/21.0.1/javafx-swing-21.0.1-win.jar",
+        "size": 89704,
+        "digest": "79c0fe8ab8f2a15a23dd3eca2cb1cd3fce03ee22663c4861ba50fb41ae3d5495",
+        "systems": [
+            "windows"
+        ],
+        "archs": [
+            "x64"
+        ]
+    }
+]

@@ -32,13 +32,11 @@ import net.smoofyuniverse.maze.gen.Maze;
 
 import java.util.Random;
 
-import static net.smoofyuniverse.common.app.ApplicationManager.getJavaVersion;
-
 public class MazeGen extends Application {
 
 	@Override
 	public void init() throws Exception {
-		if (!detectJavaFXSwing() && getJavaVersion() >= 11)
+		if (!detectJavaFXSwing())
 			getManager().setupDependencies("javafx-extra");
 	}
 
